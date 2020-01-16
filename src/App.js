@@ -106,6 +106,7 @@ class App extends Component {
       .catch(err => console.log(err));
   };
   onRouteChange = route => {
+    console.log('route', route)
     if (route === "signin") {
       this.setState(intialState);
     } else if (route === "home") {
