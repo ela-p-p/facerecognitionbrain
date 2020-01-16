@@ -7,12 +7,7 @@ import Rank from "./components/Rank/Rank";
 import FaceRecognition from "./components/FaceRecognition/FaceRecognition";
 import SignIn from "./components/SignIn/SignIn";
 import Register from "./components/Register/Register";
-import Clarifai from "clarifai";
 import "./App.css";
-
-const app = new Clarifai.App({
-  apiKey: "bc4cc6d2f16147b085e4dbed8991ba1f"
-});
 
 const particlesOptions = {
   particles: {
@@ -83,8 +78,14 @@ class App extends Component {
     this.setState({
       imageUrl: this.state.input
     });
-    app.models
-      .predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+    fetch("http://localhost:3000/imageUrl", {
+      method: "post",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        input: this.state.input
+      })
+    })
+      .then(response => response.json())
       .then(response => {
         if (response) {
           fetch("http://localhost:3000/image", {
@@ -100,10 +101,9 @@ class App extends Component {
             })
             .catch(console.log);
         }
-        this.displayFaceBox(this.calculateFaceLocation(response)).catch(err =>
-          console.log(err)
-        );
-      });
+        this.displayFaceBox(this.calculateFaceLocation(response));
+      })
+      .catch(err => console.log(err));
   };
   onRouteChange = route => {
     if (route === "signin") {
