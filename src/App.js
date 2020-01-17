@@ -25,7 +25,7 @@ const intialState = {
   input: "",
   imageUrl: "",
   box: {},
-  route: '',
+  route: "signin",
   isSignedIn: false,
   user: {
     id: 0,
@@ -50,6 +50,7 @@ class App extends Component {
         joined: data.joined
       }
     });
+    this.onRouteChange("home");
   };
   calculateFaceLocation = data => {
     const clarifaiFace =
@@ -88,6 +89,7 @@ class App extends Component {
       .then(response => response.json())
       .then(response => {
         if (response) {
+          this.displayFaceBox(this.calculateFaceLocation(response));
           fetch("https://aqueous-spire-68329.herokuapp.com/image", {
             method: "put",
             headers: { "Content-Type": "application/json" },
@@ -101,12 +103,10 @@ class App extends Component {
             })
             .catch(console.log);
         }
-        this.displayFaceBox(this.calculateFaceLocation(response));
       })
       .catch(err => console.log(err));
   };
   onRouteChange = route => {
-    console.log("route", route);
     if (route === "signin") {
       this.setState(intialState);
     } else if (route === "home") {
@@ -118,36 +118,35 @@ class App extends Component {
       route: route
     });
   };
+
   render() {
     const { isSignedIn, route, imageUrl, box } = this.state;
     return (
       <div className="App">
         <Particles className="particles" params={particlesOptions} />
-
         <Navigation
           isSignedIn={isSignedIn}
           onRouteChange={this.onRouteChange}
         />
-         <Logo />
-        {(route === "signin" || !route) && (
-          <SignIn onRouteChange={this.onRouteChange} loadUser={this.loadUser} />
-        )}
-        {route === "register" && (
-          <Register
-            onRouteChange={this.onRouteChange}
-            loadUser={this.loadUser}
-          />
-        )}
-        {route === "home" && (
+        <Logo />
+        {route === "home" ? (
           <div>
             <Rank name={this.state.user.name} upload={this.state.user.upload} />
             <ImageLinkForm
               onInputChange={this.onInputChange}
               onButtonSubmit={this.onButtonSubmit}
             />
-            <FaceRecognition box={box} imageUrl={imageUrl} />
+              <FaceRecognition box={box} imageUrl={imageUrl} />
           </div>
+        ) : route === "signin" ? (
+          <SignIn onRouteChange={this.onRouteChange} loadUser={this.loadUser} />
+        ) : (
+          <Register
+            onRouteChange={this.onRouteChange}
+            loadUser={this.loadUser}
+          />
         )}
+        }
       </div>
     );
   }
