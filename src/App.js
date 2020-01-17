@@ -25,7 +25,7 @@ const intialState = {
   input: "",
   imageUrl: "",
   box: {},
-  route: "signin",
+  route: '',
   isSignedIn: false,
   user: {
     id: 0,
@@ -106,7 +106,7 @@ class App extends Component {
       .catch(err => console.log(err));
   };
   onRouteChange = route => {
-    console.log('route', route)
+    console.log("route", route);
     if (route === "signin") {
       this.setState(intialState);
     } else if (route === "home") {
@@ -128,9 +128,18 @@ class App extends Component {
           isSignedIn={isSignedIn}
           onRouteChange={this.onRouteChange}
         />
-        {route === "home" ? (
+         <Logo />
+        {(route === "signin" || !route) && (
+          <SignIn onRouteChange={this.onRouteChange} loadUser={this.loadUser} />
+        )}
+        {route === "register" && (
+          <Register
+            onRouteChange={this.onRouteChange}
+            loadUser={this.loadUser}
+          />
+        )}
+        {route === "home" && (
           <div>
-            <Logo />
             <Rank name={this.state.user.name} upload={this.state.user.upload} />
             <ImageLinkForm
               onInputChange={this.onInputChange}
@@ -138,13 +147,6 @@ class App extends Component {
             />
             <FaceRecognition box={box} imageUrl={imageUrl} />
           </div>
-        ) : route === "signin" || !route ? (
-          <SignIn onRouteChange={this.onRouteChange} loadUser={this.loadUser} />
-        ) : (
-          <Register
-            onRouteChange={this.onRouteChange}
-            loadUser={this.loadUser}
-          />
         )}
       </div>
     );
